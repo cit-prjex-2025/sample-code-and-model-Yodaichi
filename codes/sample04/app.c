@@ -1,5 +1,7 @@
 #include "app.h"
-#include "util.h"
+#include "horn.h" // ← この行を追加
+#include "timer.h"
+
 
 const int bumper_sensor = EV3_PORT_1;
 const int linemon_sensor = EV3_PORT_3;
@@ -98,6 +100,7 @@ void porter_transport(void) {
     }
     if( p_entry ) {
       tracer_stop();
+      horn_arrived(); // ← この行を追加します
     }
     break;
   case P_WAIT_FOR_UNLOADING:
@@ -124,6 +127,7 @@ void porter_transport(void) {
     }
     if( p_entry ) {
       tracer_stop();
+      horn_arrived(); // ← この行を追加します
     }
     break;
   case P_ARRIVED:
