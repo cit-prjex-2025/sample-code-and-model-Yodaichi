@@ -70,6 +70,7 @@ typedef enum { // <1>
 } porter_state; // <2>
 
 porter_state p_state = P_WAIT_FOR_LOADING; // <3>
+static int loading_timer; // ← この行を追加
 
 int p_entry = true; // <4>
 
@@ -77,7 +78,7 @@ void porter_transport(void) {
   num_f(p_state, 2); // <1>
   switch(p_state) {
   case P_WAIT_FOR_LOADING: // <2>
-    if( p_entry ) { // <3>
+    /*if( p_entry ) { // <3>
       p_entry = false;
     }
     // <4>
@@ -87,7 +88,31 @@ void porter_transport(void) {
     }
     if( p_entry ) { // <8>
       // exit
-    }
+    } */
+
+   //追加部分ここから
+  if( p_entry ) {
+    /* entry処理 */
+    timer_start(10000); // 10秒タイマーを開始
+    p_entry = false;
+  }
+
+  /* do処理 */
+  if (timer_is_timedout()) { // 10秒経過したら
+    horn_confirmation();     // 確認音を鳴らす
+    timer_start(10000);      // 再度タイマーを開始
+  }
+
+  if( carrier_cargo_is_loaded() ) { // 荷物が載ったら
+    p_state = P_TRANSPORTING;
+    p_entry = true;
+  }
+  if( p_entry ) {
+    /* exit処理 */
+    timer_stop(); // タイマーを停止
+  }
+  //追加部分ここまで
+  
     break;
   case P_TRANSPORTING:
     if( p_entry ) {
